@@ -1,9 +1,11 @@
 use std::iter::repeat;
 
-fn sierpinski(order: usize) -> Vec<String> {
-  let mut triangle = vec!["*".to_string()];
+/// Generate a sierpenski triangle of a certain magnitude.
+/// Reccomended for order > 0
+pub fn sierpinski(order: usize, character: char, space_char: char) -> Vec<String> {
+  let mut triangle = vec![character.to_string()];
   for i in 0..order {
-    let space = repeat(' ').take(2_usize.pow(i as u32)).collect::<String>();
+    let space = repeat(space_char).take(2_usize.pow(i as u32)).collect::<String>();
 
     // save original state
     let mut triangle_original = triangle.clone();
@@ -16,8 +18,8 @@ fn sierpinski(order: usize) -> Vec<String> {
 
     // add new lines
     triangle.iter().for_each(|r| {
-        let new_row = format!("{}{}{}", r, " ", r);
-        triangle_original.push(new_row);
+      let new_row = format!("{}{}{}", r, " ", r);
+      triangle_original.push(new_row);
     });
 
     triangle = triangle_original;
@@ -38,5 +40,5 @@ fn main() {
     return;
   };
 
-  sierpinski(order).iter().for_each(|it| println!("{}", it));
+  sierpinski(order, '*', ' ').iter().for_each(|it| println!("{}", it));
 }
