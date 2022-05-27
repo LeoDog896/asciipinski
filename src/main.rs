@@ -1,56 +1,57 @@
-use std::iter::repeat;
 use clap::Parser;
 
-/// Generate ASCII Sierpiński triangles 
+/// Generate ASCII Sierpiński triangles
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-  /// Character to use
-  #[clap(short, long, default_value_t = '*')]
-  base_character: char,
+    /// base character to use for the triangle
+    #[clap(short, long, default_value = "*")]
+    base: String,
 
-  /// Triangle iterations
-  #[clap(default_value_t = 4)]
-  amount: usize
+    /// Triangle iterations
+    #[clap(default_value_t = 4)]
+    amount: usize,
 }
 
 /// Generate a sierpenski triangle of a certain magnitude.
 /// Reccomended for order > 0
-pub fn sierpinski(order: usize, character: char, space_char: char) -> Vec<String> {
-  let mut triangle = vec![character.to_string()];
-  for i in 0..order {
-    let space = repeat(space_char).take(2_usize.pow(i as u32)).collect::<String>();
+pub fn sierpinski(order: usize, character: String, space: String) -> Vec<String> {
+    let mut triangle: Vec<String> = vec![character];
+    for i in 0..order {
+        let upsized_space = space.as_str().repeat(2_usize.pow(i as u32));
 
-    // save original state
-    let mut triangle_original = triangle.clone();
+        // save original state
+        let mut triangle_original = triangle.clone();
 
-    // extend existing lines
-    triangle_original.iter_mut().for_each(|r| {
-        let new_row = format!("{}{}{}", space, r, space);
-        *r = new_row;
-    });
+        // extend existing lines
+        triangle_original.iter_mut().for_each(|r| {
+            let new_row = format!("{}{}{}", upsized_space, r, upsized_space);
+            *r = new_row;
+        });
 
-    // add new lines
-    triangle.iter().for_each(|r| {
-      let new_row = format!("{}{}{}", r, " ", r);
-      triangle_original.push(new_row);
-    });
+        // add new lines
+        triangle.iter().for_each(|r| {
+            let new_row = format!("{}{}{}", r, " ", r);
+            triangle_original.push(new_row);
+        });
 
-    triangle = triangle_original;
-  }
+        triangle = triangle_original;
+    }
 
-  return triangle;
+    triangle
 }
 
 fn main() {
-  let args = Args::parse();
+    let args = Args::parse();
 
-  let amount = args.amount;
+    let amount = args.amount;
 
-  if amount < 1 {
-    eprintln!("Amount must be greater than 0!");
-    return;
-  };
+    if amount < 1 {
+        eprintln!("Amount must be greater than 0!");
+        return;
+    };
 
-  sierpinski(amount, args.base_character, ' ').iter().for_each(|it| println!("{}", it));
+    let triangle: String = sierpinski(amount, args.base, " ".to_string()).join("\n");
+
+    println!("{}", triangle);
 }
