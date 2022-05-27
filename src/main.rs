@@ -1,4 +1,18 @@
 use std::iter::repeat;
+use clap::Parser;
+
+/// Generate ASCII Sierpiński triangles 
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+  /// Character to use
+  #[clap(short, long, default_value_t = '*')]
+  base_character: char,
+
+  /// Triangle iterations
+  #[clap(default_value_t = 4)]
+  amount: usize
+}
 
 /// Generate a sierpenski triangle of a certain magnitude.
 /// Reccomended for order > 0
@@ -29,16 +43,14 @@ pub fn sierpinski(order: usize, character: char, space_char: char) -> Vec<String
 }
 
 fn main() {
-  let order = std::env::args()
-    .nth(1)
-    .unwrap_or_else(|| "4".to_string())
-    .parse::<usize>()
-    .unwrap();
+  let args = Args::parse();
 
-  if order < 1 {
-    println!("Amount must be greater than 0!");
+  let amount = args.amount;
+
+  if amount < 1 {
+    eprintln!("Amount must be greater than 0!");
     return;
   };
 
-  sierpinski(order, '*', ' ').iter().for_each(|it| println!("{}", it));
+  sierpinski(amount, args.base_character, ' ').iter().for_each(|it| println!("{}", it));
 }
